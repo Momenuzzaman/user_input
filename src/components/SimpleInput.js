@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+
 import userInput from '../hooks/use-input';
 
 const SimpleInput = (props) => {
@@ -12,43 +12,30 @@ const SimpleInput = (props) => {
   } = userInput(value => value.trim() !== '');
 
 
-  const [enteredEmail, setEnteredEmail] = useState('');
-  const [enteredEmailTouched, setEnteredEmailTouched] = useState(false);
-
-
-  const enteredEmailIsValid = enteredEmail.includes('@');
-  const enteredEmailIsInvalid = !enteredEmailIsValid && enteredEmailTouched;
+  const { value: enteredEmail,
+    isValid: enteredEmailIsValid,
+    hasError: emailInputHasError,
+    reset: emailInputReset,
+    valueChangeHandler: enterEmailHandler,
+    inputBlurHandler: emailInputBlurHandler
+  } = userInput(value => value.includes('@'));
   let formIsValid = false;
 
   if (enteredNameIsValid && enteredEmailIsValid) {
     formIsValid = true;
   }
-  const enterEmailHandler = (event) => {
-    setEnteredEmail(event.target.value)
-  };
 
-  const emailInputBlurHandler = (event) => {
-    setEnteredEmailTouched(true)
-
-  }
   const formSubmittedHandler = (event) => {
     event.preventDefault();
 
-    // setEnteredNameTouched(true);
-    // if (!enteredNameIsValid) {
-    //   return
-    // }
-    // setEnteredName('');
-    // setEnteredNameTouched(false);
     resetNameInput();
-    setEnteredEmail('');
-    setEnteredEmailTouched(false);
+    emailInputReset();
   }
 
   const nameInputClasses = nameInputHasError
     ? 'form-control invalid'
     : 'form-control';
-  const emailInputClasses = enteredEmailIsInvalid
+  const emailInputClasses = emailInputHasError
     ? 'form-control invalid'
     : 'form-control';
   return (
@@ -69,7 +56,7 @@ const SimpleInput = (props) => {
           id='name'
           onChange={enterEmailHandler}
           onBlur={emailInputBlurHandler} />
-        {nameInputHasError && <p className="error-text">Please Enter a email</p>}
+        {emailInputHasError && <p className="error-text">Please Enter a email</p>}
       </div>
       <div className="form-actions">
         <button disabled={!formIsValid}>Submit</button>
